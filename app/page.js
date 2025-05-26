@@ -1,39 +1,53 @@
-"use client"; // Adicione esta linha no início do arquivo
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [recursos, setRecursos] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
-    fetch('/api/recursos')
-      .then(response => {
-        if (!response.ok) throw new Error('Erro');
+    fetch("/api/recursos")
+      .then((response) => {
+        if (!response.ok) throw new Error("Erro");
         return response.json();
       })
-      .then(data => setRecursos(data))
-      .catch(error => console.error('Erro ao buscar recursos:', error));
+      .then((data) => setRecursos(data))
+      .catch((error) => console.error("Erro ao buscar recursos:", error));
   }, []);
+
+  function handleClickRecurso(recurso) {
+  if (recurso.title === "Conteúdo Inspirador") {
+    fetch("https://api.adviceslip.com/advice")
+      .then((response) => response.json())
+      .then((data) => {
+        localStorage.setItem("dicaSaudavel", data.slip.advice);
+        router.push("/lifestyle/conteudo-inspirador");
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar dica externa:", error);
+        alert("Erro ao carregar conteúdo inspirador.");
+      });
+  }
+}
+
 
   return (
     <>
-      {/* Seção Hero */}
       <section className="hero">
         <section className="container">
           <article className="hero-content">
             <section className="hero-text">
               <h1>Transforme seu estilo de vida da melhor forma</h1>
-              
-              {/* A imagem que será exibida apenas no mobile */}
               <figure className="hero-image-mobile">
                 <img src="cr7.jpg" alt="Painel de Marketing Digital" />
               </figure>
-              
               <p>
-                Inspire-se a viver com mais saúde, energia e propósito:
-                descubra dicas de fitness, nutrição, bem-estar mental e
-                qualidade de vida, tudo em um só lugar feito para transformar
-                a sua jornada pessoal.
+                Inspire-se a viver com mais saúde, energia e propósito: descubra
+                dicas de fitness, nutrição, bem-estar mental e qualidade de
+                vida, tudo em um só lugar feito para transformar a sua jornada
+                pessoal.
               </p>
               <section className="hero-buttons">
                 <a href="#" className="botao botao-preenchido">
@@ -44,7 +58,6 @@ export default function Home() {
                 </a>
               </section>
             </section>
-            {/* A imagem desktop original (será ocultada no mobile) */}
             <figure className="hero-image-desktop">
               <img src="cr7.jpg" alt="Painel de Marketing Digital" />
             </figure>
@@ -52,7 +65,6 @@ export default function Home() {
         </section>
       </section>
 
-      {/* Seção de Recursos */}
       <section className="recursos" id="recursos">
         <section className="container">
           <h2 className="section-title">Recursos Poderosos</h2>
@@ -62,21 +74,30 @@ export default function Home() {
           </p>
           <section className="recursos-grid">
             {recursos.length > 0 ? (
-              recursos.map(recurso => (
-                <article className="recursos-card" key={recurso.id}>
+              recursos.map((recurso) => (
+                <article
+                  className="recursos-card"
+                  key={recurso.id}
+                  onClick={() => handleClickRecurso(recurso)}
+                  style={{
+                    cursor:
+                      recurso.title === "Dicas de Alimentação Saudável"
+                        ? "pointer"
+                        : "default",
+                  }}
+                >
                   <div className="recursos-icon">{recurso.icon}</div>
                   <h3>{recurso.title}</h3>
                   <p>{recurso.description}</p>
                 </article>
               ))
             ) : (
-              <p>Carregando recursos...</p> // Mensagem de carregamento
+              <p>Carregando recursos...</p>
             )}
           </section>
         </section>
       </section>
 
-      {/* Seção de Depoimentos */}
       <section className="depoimentos" id="depoimentos">
         <section className="container">
           <h2 className="section-title">O que nossos clientes dizem</h2>
@@ -121,7 +142,6 @@ export default function Home() {
         </section>
       </section>
 
-      {/* Seção CTA */}
       <section className="cta-section" id="contato">
         <section className="container">
           <h2 className="cta-title">Comece sua transformação hoje</h2>
